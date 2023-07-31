@@ -1,7 +1,7 @@
 import { Link, Flex } from '@bigcommerce/big-design';
 import React from 'react';
 
-const ThumbnailImage = ({ alt,name, width, height, images }) => {
+const ThumbnailImage = ({ alt,name, width, height, imageURL }) => {
   
   const thumbnailWidth = width || 50;
   const thumbnailHeight = height || 50;
@@ -11,8 +11,8 @@ const ThumbnailImage = ({ alt,name, width, height, images }) => {
     border: '1px solid #D3D3D3',
   };
 
-  const thumbnailImage = images.find(image => image.is_thumbnail);
-  const thumbnailUrl = thumbnailImage ? thumbnailImage.url_thumbnail : 'default-thumbnail-url.jpg';//add a default image url
+ // const thumbnailImage = images.find(image => image.is_thumbnail);
+  const thumbnailUrl = imageURL || 'default-thumbnail-url.jpg';//add a default image url
 
   return (
     <Flex flexDirection="row">

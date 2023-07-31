@@ -16,6 +16,9 @@ const ProductList = (props) => {
   const [selectedItems, setSelectedItems] = useState([]);
   const [isRowExapanded, setIsRowExapanded] = useState([]);
   
+  const isChild =({option_values}) =>{
+    return !!option_values?.length ? true: false
+  }
 
   const onChange = (e) => {
     setSearchValue(e.target.value);
@@ -26,42 +29,77 @@ const ProductList = (props) => {
   };
 
 
-const RenderVariants =() =>{
+const RenderVariants =({option_values}) =>{
+  if(isChild({option_values})){
+    return
+  }
   //TODO write the code for sub rows
 return (
   <Button variant="subtle" iconOnly={isRowExapanded ? <ExpandMoreIcon/>:<ChevronRightIcon/>} onClick={tableRowClicked}/>
   )
 }
 
-const RenderVisibility=(visibility)=>{
+const RenderVisibility=({visibility,option_values})=>{
+  if(isChild({option_values})){
+    return
+  }
   return(
    visibility ? <Badge label="ENABLED" variant="success" />:<></> 
   )
  }
 
-const RenderFeatured =() =>{
+const RenderFeatured =({option_values, is_featured}) =>{
+  if(isChild({option_values})){
+    return
+  }
+  const isFeatured = is_featured ? true: false
   return (<Dropdown
+  padding={20}
   items={[
-    { content: 'Item', icon: <EditIcon />, onItemClick: (item) => item },
-    { content: 'Link', icon: <OpenInNewIcon />, type: 'link', url: '#' },
+    { content: 'Featured', disabled: isFeatured, onItemClick: (item) => item },
+    { content: 'Not featured', disabled: !isFeatured, onItemClick: (item) => item},
   ]}
-  toggle={<StarIcon color="yellow"/>}
+  toggle={<StarIcon color="#ffae00"/>}
 />);
 }
 
-const RenderName =({images, name}) =>{
-  return (<ThumbnailImage label={name} images={images} alt={"altText"} width={50} height={50} />);
+const RenderName =(data) =>{
+  const {images, name, option_values} = data.data;
+  if(isChild({option_values})){
+    const { option_values, image_url } = data.data;
+    const label = `${option_values?.[0].label} ${option_values?.[1].label}`
+    return (
+      <Flex flexDirection={"row"}>
+        <FlexItem>
+        <Checkbox
+          checked={false}
+          //label={checked ? 'Checked' : 'Unchecked'}
+          //onChange={handleChange}
+        />
+        </FlexItem>
+        <FlexItem>
+        <ThumbnailImage label={label} imageURL={image_url} alt={"altText"} width={50} height={50} />
+        </FlexItem>
+      </Flex>
+    )
+  }else {
+  const thumbnailImage = images?.find(image => image.is_thumbnail);
+  const thumbnailUrl =  thumbnailImage?.url_thumbnail;
+    return (<ThumbnailImage label={name} imageURL={thumbnailUrl} alt={"altText"} width={50} height={50} />)
+  }
+ 
 }
 
 const columns=[
-  { header: 'Name', hash: 'name', render: ({ images, name }) =>  <RenderName images={images} name={name}/>},
-  { header: '', hash: 'featured', render: ({  }) => <RenderFeatured /> },
+  { header: 'Name', hash: 'name', render: (data) =>  <RenderName data={data}/>},
+  { header: '', hash: 'featured', render: ({  option_values, is_featured }) => <RenderFeatured option_values={option_values} is_featured={is_featured}/> },
   { header: 'Sku', hash: 'sku', render: ({ sku }) => sku },
-  { header: 'Categories', hash: 'categories', render: ({ categories }) => <Categories categories={categories}/> },
-  { header: 'Stock', hash: 'stock', render: ({ stock }) => !stock ?'-':stock },
-  { header: 'Price', hash: 'price', render: ({ calculated_price }) => "$"+calculated_price },
-  { header: 'Channels', hash: 'channels', render: ({ channel_ids }) => channel_ids.join(',') },
-  { header: 'Visibility', hash: 'visibility', render: ({ is_visible }) =><RenderVisibility visibility={is_visible}/> },
+  { header: 'Categories', hash: 'categories', render: ({ categories, option_values }) => isChild({option_values}) ? "":<Categories option_values={option_values} categories={categories}/> },
+  { header: 'Stock', hash: 'stock', render: ({ stock, option_values }) => !stock || isChild({option_values}) ?'--':stock },
+  { header: 'Price', hash: 'price', render: ({ calculated_price,  option_values }) => "$"+calculated_price },
+  { header: 'Stock', hash: 'stock', render: ({ stock, option_values }) => !stock || isChild({option_values}) ?'--':stock },
+  { header: 'Channels', hash: 'channels', render: ({ channel_ids , option_values }) => isChild({option_values}) ? "" :channel_ids.join(',') },
+  { header: 'Visibility', hash: 'visibility', render: ({ is_visible, option_values }) =><RenderVisibility option_values={option_values} visibility={is_visible}/> },
   { header: '', hash: 'more', render: ({  }) => "" }
 ];
 
@@ -77,7 +115,7 @@ const columns=[
     expandable={{
       expandedRows,
       onExpandedChange: onExpandedRow,
-      getChildren: (row) => row?.variants,
+      getChildren: (row) => row?.variants.length > 2 ? row?.variants : null,
     }}
     selectable={{
       selectedItems,

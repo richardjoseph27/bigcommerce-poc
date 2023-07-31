@@ -1,8 +1,7 @@
 import React from 'react';
 import { Table, Collapse , Dropdown ,Badge, Link,  Text,Checkbox,Flex, FlexItem, AccordionPanel, useAccordionPanel, StatefulTable, Box, Button } from '@bigcommerce/big-design';
 
-const Categories = (categories) => {
-
+const Categories = ({categories}) => {
     //code for the categories
   const categoriesData = {
     18: 'Bath',
@@ -13,7 +12,7 @@ const Categories = (categories) => {
     23: 'Shop all',
   };
 
-  const sortedCategories = categories.categories.sort((a, b) => a - b);
+  const sortedCategories = categories?.sort((a, b) => a - b);
   const concatenatedCategories = sortedCategories.map(categoryId => categoriesData[categoryId]).join(', ');
 
 

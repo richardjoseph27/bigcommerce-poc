@@ -4,6 +4,8 @@ import { Panel, PillTabs, Flex, FlexItem, Form, FormGroup, Input, Box , Button} 
 import { filters } from '../../data/filters';
 import { SearchIcon, FilterListIcon } from '@bigcommerce/big-design-icons';
 import ProductList from '@/components/ProductList';
+import Settings from '@/components/Settings';
+
 
 const HomePage = () => {
   const [activePills, setActivePills] = useState('all');
@@ -37,6 +39,7 @@ const HomePage = () => {
         </FlexItem>
       </Flex>
     </Box>
+     <Settings/>
       <ProductList />
     </Panel>
   );
