@@ -1,5 +1,5 @@
 // components/ProductList.js
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { TableNext } from "@bigcommerce/big-design/dist/es/components/TableNext";
 import { Table, Collapse , Dropdown ,Badge, Link,  Text,Checkbox,Flex, FlexItem, AccordionPanel, useAccordionPanel, StatefulTable, Box, Button } from '@bigcommerce/big-design';
 import {products} from '@/data/products';
@@ -15,7 +15,23 @@ const ProductList = (props) => {
   const [items, setItems] = useState(products.data);
   const [selectedItems, setSelectedItems] = useState([]);
   const [isRowExapanded, setIsRowExapanded] = useState([]);
-  
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPageOptions] = useState([5, 10, 20, 30]);
+  const [itemsPerPage, setItemsPerPage] = useState(5);
+  const [currentItems, setCurrentItems] = useState([]);
+
+  const onItemsPerPageChange = (newRange) => {
+    setCurrentPage(1);
+    setItemsPerPage(newRange);
+  };
+
+  useEffect(() => {
+    const maxItems = currentPage * itemsPerPage;
+    const lastItem = Math.min(maxItems, items.length);
+    const firstItem = Math.max(0, maxItems - itemsPerPage);
+
+    setCurrentItems(items.slice(firstItem, lastItem));
+  }, [currentPage, itemsPerPage]);
   const isChild =({option_values}) =>{
     return !!option_values?.length ? true: false
   }
@@ -54,7 +70,7 @@ const RenderFeatured =({option_values, is_featured}) =>{
   }
   const isFeatured = is_featured ? true: false
   return (<Dropdown
-  padding={20}
+  //padding={}
   items={[
     { content: 'Featured', disabled: isFeatured, onItemClick: (item) => item },
     { content: 'Not featured', disabled: !isFeatured, onItemClick: (item) => item},
@@ -78,19 +94,24 @@ const RenderName =(data) =>{
         />
         </FlexItem>
         <FlexItem>
-        <ThumbnailImage label={label} imageURL={image_url} alt={"altText"} width={50} height={50} />
+        <ThumbnailImage label={label} imageURL={image_url} alt={"altText"} />
         </FlexItem>
       </Flex>
     )
   }else {
   const thumbnailImage = images?.find(image => image.is_thumbnail);
   const thumbnailUrl =  thumbnailImage?.url_thumbnail;
-    return (<ThumbnailImage label={name} imageURL={thumbnailUrl} alt={"altText"} width={50} height={50} />)
+    return (<ThumbnailImage label={name} imageURL={thumbnailUrl} alt={"altText"} />)
   }
  
 }
 
 const columns=[
+  // { header: '', hash: 'selection', render: (data) =>  (<Checkbox
+  //   checked={false}
+  //   //label={checked ? 'Checked' : 'Unchecked'}
+  //   //onChange={handleChange}
+  // />)},
   { header: 'Name', hash: 'name', render: (data) =>  <RenderName data={data}/>},
   { header: '', hash: 'featured', render: ({  option_values, is_featured }) => <RenderFeatured option_values={option_values} is_featured={is_featured}/> },
   { header: 'Sku', hash: 'sku', render: ({ sku }) => sku },
@@ -120,6 +141,14 @@ const columns=[
     selectable={{
       selectedItems,
       onSelectionChange: setSelectedItems,
+    }}
+    pagination={{
+      currentPage,
+      totalItems: items.length,
+      onPageChange: setCurrentPage,
+      itemsPerPageOptions,
+      onItemsPerPageChange,
+      itemsPerPage,
     }}
     // pagination={true}
   /> 
