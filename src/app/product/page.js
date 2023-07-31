@@ -1,6 +1,6 @@
 'use client'
 import React, { useState } from 'react';
-import { Panel, PillTabs, Flex, FlexItem, Form, FormGroup, Input, Box , Button} from '@bigcommerce/big-design';
+import { GlobalStyles,Panel, PillTabs, Flex, FlexItem, Form, FormGroup, Input, Box , Button} from '@bigcommerce/big-design';
 import { filters } from '../../data/filters';
 import { SearchIcon, FilterListIcon } from '@bigcommerce/big-design-icons';
 import ProductList from '@/components/ProductList';
@@ -22,6 +22,7 @@ const HomePage = () => {
   
   return (
     <Panel margin="medium">
+      <GlobalStyles/>
       <PillTabs activePills={activePills} items={filters} onPillClick={onPillClick} />
       <Box margin="medium">
       <Flex>

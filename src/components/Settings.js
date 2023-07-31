@@ -57,7 +57,7 @@ return(
   />
 
 <Button variant="subtle">Select all products</Button>
-<Button variant="subtle" iconOnly={<SettingsIcon />} />
+<Button onClick={()=>setIsOpen(true)} variant="subtle" iconOnly={<SettingsIcon />} />
 <Pagination
         currentPage={page}
         itemsPerPage={range}

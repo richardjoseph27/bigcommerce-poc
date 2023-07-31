@@ -15,6 +15,8 @@ export const data = [
   ];
 const EditColumns = ({ isOpen, setIsOpen }) => {
     const [items, setItems] = useState(data);
+    const [selectedItems, setSelectedItems] = useState([]);
+
     //const [isOpen, setIsOpen] = useState(isModalOpen);
     const onDragEnd = (from, to) => setItems((currentItems) => dragEnd(currentItems, from, to));
 return(<Modal
@@ -28,13 +30,13 @@ actions={[
 ]}
 closeOnClickOutside={false}
 closeOnEscKey={true}
-header="Modal title"
+header="Edit columns"
 isOpen={isOpen}
 onClose={() => setIsOpen(false)}
 >
 <Table
       columns={[
-        { header: '', hash: 'columns', render: ({  title }) => title },
+        { header: '', hash: 'columns',align:'left', render: ({  title }) => title },
       ]}
       items={items}
       onRowDrop={onDragEnd}
@@ -43,6 +45,7 @@ onClose={() => setIsOpen(false)}
         selectedItems,
         onSelectionChange: setSelectedItems,
       }}
+
     />
 </Modal>)
 }
